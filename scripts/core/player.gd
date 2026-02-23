@@ -1,34 +1,59 @@
 extends CharacterBody2D
 
-const SPEED: float = 300.0
-const JUMP_VELOCITY: float = -550.0
+
+const MOVE_SPEED: float = 300.0
+const JUMP_FORCE: float = -550.0
+const ATTACK_DAMAGE: int = 15
+const ATTACK_OFFSET: float = 30.0
+
+
+signal health_changed(current: int, max: int)
+signal died
+
+
+@export var max_health: int = 100
+var health: int
 
 
 enum State {
+	SPAWN,
 	IDLE,
 	RUN,
 	JUMP,
 	FALL,
 	ATTACK,
-	SPAWN
+	HIT,
+	DEAD
 }
-
-@onready var anim: AnimatedSprite2D = $AnimatedSprite2D
 
 var state: State = State.SPAWN
 
 
+@onready var anim: AnimatedSprite2D = $AnimatedSprite2D
+@onready var attack_area: Area2D = $AttackArea
+
+
 func _ready() -> void:
+	health = max_health
+	emit_signal("health_changed", health, max_health)
+
+	attack_area.monitoring = false
+	attack_area.body_entered.connect(_on_attack_body_entered)
+
 	anim.animation_finished.connect(_on_animation_finished)
-	_play_animation("Spawn")
+
+	_enter_spawn()
 
 
 func _physics_process(delta: float) -> void:
+	if state == State.DEAD:
+		return
+
 	_apply_gravity(delta)
 	_handle_input()
 	_update_state()
-	_update_animation()
 	move_and_slide()
+	_update_animation()
 
 
 func _apply_gravity(delta: float) -> void:
@@ -37,7 +62,7 @@ func _apply_gravity(delta: float) -> void:
 
 
 func _handle_input() -> void:
-	if state == State.ATTACK or state == State.SPAWN:
+	if state in [State.ATTACK, State.SPAWN, State.HIT]:
 		return
 
 	if Input.is_action_just_pressed("attack"):
@@ -45,24 +70,17 @@ func _handle_input() -> void:
 		return
 
 	if Input.is_action_just_pressed("jump") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
+		velocity.y = JUMP_FORCE
 
-
-	var direction := Input.get_axis("move_left", "move_right")
-	velocity.x = direction * SPEED
+	var direction: float = Input.get_axis("move_left", "move_right")
+	velocity.x = direction * MOVE_SPEED
 
 	if direction != 0:
-		anim.flip_h = direction < 0
+		_update_orientation(direction)
 
-
-func respawn(gp: Vector2) -> void:
-	global_position = gp
-	velocity = Vector2.ZERO
-	_change_state(State.SPAWN)
-	_play_animation("Spawn")
 
 func _update_state() -> void:
-	if state == State.ATTACK or state == State.SPAWN:
+	if state in [State.ATTACK, State.SPAWN, State.HIT]:
 		return
 
 	if not is_on_floor():
@@ -74,7 +92,57 @@ func _update_state() -> void:
 
 
 func _change_state(new_state: State) -> void:
+	if state == new_state:
+		return
+
 	state = new_state
+
+	match state:
+		State.SPAWN:
+			_enter_spawn()
+		State.ATTACK:
+			_enter_attack()
+		State.HIT:
+			_enter_hit()
+		State.DEAD:
+			_enter_dead()
+
+
+
+func _enter_spawn() -> void:
+	velocity = Vector2.ZERO
+	_play_animation("Spawn")
+
+
+func _enter_attack() -> void:
+	velocity.x = 0.0
+	_play_animation("Attack")
+	_enable_attack()
+
+
+func _enter_hit() -> void:
+	velocity.x = 0.0
+	_play_animation("Damage")
+
+
+func _enter_dead() -> void:
+	velocity = Vector2.ZERO
+	set_physics_process(false)
+	_play_animation("Defeat")
+	emit_signal("died")
+
+
+
+func _enable_attack() -> void:
+	attack_area.monitoring = true
+	await get_tree().create_timer(0.2).timeout
+	attack_area.monitoring = false
+
+
+func _on_attack_body_entered(body: Node2D) -> void:
+	if body.has_method("take_damage"):
+		body.take_damage(ATTACK_DAMAGE)
+
 
 
 func _update_animation() -> void:
@@ -87,8 +155,8 @@ func _update_animation() -> void:
 			_play_animation("Jump")
 		State.FALL:
 			_play_animation("Fall")
-		State.ATTACK:
-			_play_animation("Attack")
+		State.ATTACK, State.SPAWN, State.HIT, State.DEAD:
+			pass
 
 
 func _play_animation(name: String) -> void:
@@ -97,5 +165,39 @@ func _play_animation(name: String) -> void:
 
 
 func _on_animation_finished() -> void:
-	if state == State.ATTACK or state == State.SPAWN:
-		_change_state(State.IDLE)
+	match state:
+		State.ATTACK:
+			_change_state(State.IDLE)
+		State.SPAWN:
+			_change_state(State.IDLE)
+		State.HIT:
+			_change_state(State.IDLE)
+
+
+
+func _update_orientation(direction: float) -> void:
+	anim.flip_h = direction < 0
+	attack_area.position.x = -ATTACK_OFFSET if anim.flip_h else 0
+
+
+
+func take_damage(amount: int) -> void:
+	if state in [State.SPAWN, State.HIT, State.DEAD]:
+		return
+
+	health = clamp(health - amount, 0, max_health)
+	emit_signal("health_changed", health, max_health)
+
+	if health == 0:
+		_change_state(State.DEAD)
+	else:
+		_change_state(State.HIT)
+
+
+
+func respawn(position: Vector2) -> void:
+	global_position = position
+	health = max_health
+	emit_signal("health_changed", health, max_health)
+	set_physics_process(true)
+	_change_state(State.SPAWN)

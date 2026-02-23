@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://dxsr8vxw4k8xt"]
+
+[ext_resource type="Script" uid="uid://cxikpxje054ye" path="res://scripts/core/hud.gd" id="1_as3gr"]
+[ext_resource type="Texture2D" uid="uid://b7g5vcawcw2mu" path="res://assets/sprites/player/SPRITE_PORTRAIT.png" id="1_qao66"]
+[ext_resource type="FontFile" uid="uid://b7txi7bp2hua4" path="res://assets/fonts/menu_font.tres" id="2_as3gr"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ax4tw"]
+font = ExtResource("2_as3gr")
+font_size = 40
+
+[node name="HUD" type="CanvasLayer" unique_id=1831092739]
+script = ExtResource("1_as3gr")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1252097092]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 600
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=417678040]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PlayerIcon" type="TextureRect" parent="MarginContainer/HBoxContainer" unique_id=1042189407]
+custom_minimum_size = Vector2(100, 70)
+layout_mode = 2
+texture = ExtResource("1_qao66")
+stretch_mode = 4
+
+[node name="HPBar" type="ProgressBar" parent="MarginContainer/HBoxContainer" unique_id=642295341]
+custom_minimum_size = Vector2(300, 30)
+layout_mode = 2
+value = 100.0
+fill_mode = 1
+
+[node name="KillsCounter" type="Label" parent="MarginContainer/HBoxContainer" unique_id=1668527152]
+custom_minimum_size = Vector2(500, 100)
+layout_mode = 2
+text = "Enemies Killed: 0"
+label_settings = SubResource("LabelSettings_ax4tw")
+horizontal_alignment = 2
