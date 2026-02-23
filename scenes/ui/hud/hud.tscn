@@ -38,13 +38,34 @@ layout_mode = 2
 texture = ExtResource("1_qao66")
 stretch_mode = 4
 
-[node name="HPBar" type="ProgressBar" parent="MarginContainer/HBoxContainer" unique_id=642295341]
-custom_minimum_size = Vector2(300, 30)
+[node name="HPContainer" type="Control" parent="MarginContainer/HBoxContainer" unique_id=736561934]
 layout_mode = 2
+
+[node name="HPBar" type="ProgressBar" parent="MarginContainer/HBoxContainer/HPContainer" unique_id=642295341]
+custom_minimum_size = Vector2(300, 30)
+layout_mode = 0
+offset_left = 10.0
+offset_right = 310.0
+offset_bottom = 30.0
 theme_override_styles/background = SubResource("StyleBoxFlat_as3gr")
 theme_override_styles/fill = SubResource("StyleBoxFlat_ax4tw")
 value = 100.0
 show_percentage = false
+
+[node name="HPText" type="Label" parent="MarginContainer/HBoxContainer/HPContainer/HPBar" unique_id=165750897]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 3.0
+offset_bottom = 3.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("2_as3gr")
+theme_override_font_sizes/font_size = 25
+text = "100/100"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="KillsCounter" type="Label" parent="MarginContainer/HBoxContainer" unique_id=1668527152]
 custom_minimum_size = Vector2(600, 100)

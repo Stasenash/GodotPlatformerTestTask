@@ -5,7 +5,7 @@ const MOVE_SPEED: float = 300.0
 const JUMP_FORCE: float = -550.0
 const ATTACK_DAMAGE: int = 2
 const ATTACK_OFFSET: float = 35.0
-
+const DAMAGE_NUMBER_SCENE := preload("res://scenes/ui/damage_number.tscn")
 
 signal health_changed(current: int, max: int)
 signal died
@@ -185,6 +185,8 @@ func take_damage(amount: int) -> void:
 	if state in [State.SPAWN, State.HIT, State.DEAD]:
 		return
 
+	_spawn_damage_number(amount)
+
 	health = clamp(health - amount, 0, max_health)
 	emit_signal("health_changed", health, max_health)
 
@@ -193,7 +195,12 @@ func take_damage(amount: int) -> void:
 	else:
 		_change_state(State.HIT)
 
+func _spawn_damage_number(amount: int) -> void:
+	var dmg = DAMAGE_NUMBER_SCENE.instantiate()
+	get_parent().add_child(dmg)
 
+	dmg.global_position = global_position + Vector2(0, -50)
+	dmg.setup(amount, Color(1, 0.3, 0.3))
 
 func respawn(position: Vector2) -> void:
 	global_position = position

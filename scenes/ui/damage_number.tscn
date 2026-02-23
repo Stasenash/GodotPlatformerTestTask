@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://bgrihcdoheulr"]
+
+[ext_resource type="Script" uid="uid://b8dko808uqqoi" path="res://scripts/core/damage_number.gd" id="1_ul084"]
+[ext_resource type="FontFile" uid="uid://b7txi7bp2hua4" path="res://assets/fonts/menu_font.tres" id="2_ig17g"]
+
+[node name="DamageNumber" type="Node2D" unique_id=769394666]
+script = ExtResource("1_ul084")
+
+[node name="Damage" type="Label" parent="." unique_id=1060074069]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("2_ig17g")
+theme_override_font_sizes/font_size = 30
+text = "20"
+horizontal_alignment = 1
+vertical_alignment = 1

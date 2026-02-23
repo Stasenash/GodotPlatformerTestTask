@@ -6,7 +6,7 @@ const CHASE_SPEED_MULT: float = 2.0
 const ATTACK_DISTANCE: float = 100.0
 const ATTACK_DAMAGE: int = 3
 const ATTACK_OFFSET: float = 30.0
-
+const DAMAGE_NUMBER_SCENE := preload("res://scenes/ui/damage_number.tscn")
 
 signal died
 
@@ -202,6 +202,8 @@ func take_damage(amount: int) -> void:
 	if state in [State.DEAD, State.HIT]:
 		return
 
+	_spawn_damage_number(amount)
+
 	health = clamp(health - amount, 0, max_health)
 
 	if health == 0:
@@ -209,7 +211,12 @@ func take_damage(amount: int) -> void:
 	else:
 		_change_state(State.HIT)
 
+func _spawn_damage_number(amount: int) -> void:
+	var dmg = DAMAGE_NUMBER_SCENE.instantiate()
+	get_parent().add_child(dmg)
 
+	dmg.global_position = global_position + Vector2(0, -40)
+	dmg.setup(amount)
 
 func _on_detector_body_entered(body: Node2D) -> void:
 	if body == player:
