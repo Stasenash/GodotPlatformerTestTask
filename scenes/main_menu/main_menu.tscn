@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://ckmwpk8j7ieuo"]
+
+[ext_resource type="Texture2D" uid="uid://bys6kjiu77w5t" path="res://assets/sprites/backgrounds/Space Background.png" id="1_0ebjn"]
+[ext_resource type="Script" uid="uid://cmtk3g7ecq6kj" path="res://scenes/main_menu/main_menu.gd" id="1_uqeha"]
+[ext_resource type="FontFile" uid="uid://b7txi7bp2hua4" path="res://assets/fonts/menu_font.tres" id="2_ob46e"]
+[ext_resource type="Texture2D" uid="uid://cqd6l5oy5y2dw" path="res://assets/sprites/buttons/menu_button.tres" id="3_uqeha"]
+
+[node name="MainMenu" type="Control" unique_id=278581926]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_uqeha")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1928982830]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_0ebjn")
+expand_mode = 5
+
+[node name="ButtonsContainer" type="VBoxContainer" parent="." unique_id=330455971]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 50
+alignment = 1
+
+[node name="PlayButton" type="Button" parent="ButtonsContainer" unique_id=1208801907]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/icon_hover_color = Color(0.7137255, 0.45490196, 0.8901961, 1)
+theme_override_fonts/font = ExtResource("2_ob46e")
+theme_override_font_sizes/font_size = 50
+text = "Play"
+icon = ExtResource("3_uqeha")
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="ExitButton" type="Button" parent="ButtonsContainer" unique_id=1683809574]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/icon_hover_color = Color(0.7137255, 0.45490196, 0.8901961, 1)
+theme_override_fonts/font = ExtResource("2_ob46e")
+theme_override_font_sizes/font_size = 50
+text = "Exit"
+icon = ExtResource("3_uqeha")
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[connection signal="pressed" from="ButtonsContainer/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="ButtonsContainer/ExitButton" to="." method="_on_exit_button_pressed"]
