@@ -1,7 +1,8 @@
 extends CharacterBody2D
 
 const SPEED: float = 300.0
-const JUMP_VELOCITY: float = -600.0
+const JUMP_VELOCITY: float = -550.0
+
 
 enum State {
 	IDLE,
