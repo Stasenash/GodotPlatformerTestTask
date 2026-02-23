@@ -24,7 +24,7 @@ enum State {
 
 var state: State = State.PATROL
 var direction: int = 1
-
+var player_in_range: bool = false
 
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
@@ -53,8 +53,13 @@ func _physics_process(delta: float) -> void:
 
 
 func _process_ai() -> void:
-	if state == State.CHASE and _is_player_close():
-		_change_state(State.ATTACK)
+	if player_in_range:
+		if _is_player_close():
+			_change_state(State.ATTACK)
+		elif state != State.HIT:
+			_change_state(State.CHASE)
+	else:
+		_change_state(State.PATROL)
 
 
 func _is_player_close() -> bool:
@@ -90,10 +95,13 @@ func _patrol() -> void:
 
 
 func _chase() -> void:
-	var dir_x: int = signi(player.global_position.x - global_position.x)
-	velocity.x = dir_x * BASE_SPEED * CHASE_SPEED_MULT
-
-	if dir_x != 0:
+	var delta_x: float = player.global_position.x - global_position.x
+	
+	if abs(delta_x) < 5.0:
+		velocity.x = 0.0
+	else:
+		var dir_x: int = signi(delta_x)
+		velocity.x = dir_x * BASE_SPEED * CHASE_SPEED_MULT
 		_update_orientation(dir_x)
 
 
@@ -172,11 +180,24 @@ func _on_animation_finished() -> void:
 	match state:
 		State.ATTACK:
 			_disable_attack()
-			_change_state(State.CHASE)
+			_recalculate_state()
+
 		State.HIT:
-			_change_state(State.CHASE)
+			_recalculate_state()
 
 
+func _recalculate_state() -> void:
+	if not player_in_range:
+		state = State.PATROL
+	elif _is_player_close():
+		state = State.ATTACK
+	else:
+		state = State.CHASE
+
+	_update_movement()
+
+func _is_player_visible() -> bool:
+	return player_in_range
 
 func take_damage(amount: int) -> void:
 	if state in [State.DEAD, State.HIT]:
@@ -192,10 +213,14 @@ func take_damage(amount: int) -> void:
 
 
 func _on_detector_body_entered(body: Node2D) -> void:
-	if body == player and state != State.DEAD:
-		_change_state(State.CHASE)
+	if body == player:
+		player_in_range = true
+		if state != State.DEAD:
+			_change_state(State.CHASE)
 
 
 func _on_detector_body_exited(body: Node2D) -> void:
-	if body == player and state != State.DEAD:
-		_change_state(State.PATROL)
+	if body == player:
+		player_in_range = false
+		if state != State.DEAD:
+			_change_state(State.PATROL)

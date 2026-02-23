@@ -3,7 +3,7 @@ extends CharacterBody2D
 
 const MOVE_SPEED: float = 300.0
 const JUMP_FORCE: float = -550.0
-const ATTACK_DAMAGE: int = 15
+const ATTACK_DAMAGE: int = 10
 const ATTACK_OFFSET: float = 30.0
 
 
