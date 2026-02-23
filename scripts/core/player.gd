@@ -3,7 +3,7 @@ extends CharacterBody2D
 
 const MOVE_SPEED: float = 300.0
 const JUMP_FORCE: float = -550.0
-const ATTACK_DAMAGE: int = 2
+const ATTACK_DAMAGE: int = 5
 const ATTACK_OFFSET: float = 35.0
 const ATTACK_COOLDOWN: float = 0.8
 const DAMAGE_NUMBER_SCENE := preload("res://scenes/ui/damage_number.tscn")
@@ -208,7 +208,6 @@ func _spawn_damage_number(amount: int) -> void:
 
 func respawn(position: Vector2) -> void:
 	global_position = position
-	health = max_health
 	emit_signal("health_changed", health, max_health)
 	set_physics_process(true)
 	_change_state(State.SPAWN)

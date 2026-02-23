@@ -1,0 +1,120 @@
+[gd_scene format=3 uid="uid://bnc3bqolqxxku"]
+
+[ext_resource type="Texture2D" uid="uid://diea63xndvqub" path="res://assets/sprites/FreeHorrorUi.png" id="1_6nml5"]
+[ext_resource type="Script" uid="uid://d1npyrvu08740" path="res://scripts/core/game_over_screen.gd" id="1_158n5"]
+[ext_resource type="FontFile" uid="uid://b7txi7bp2hua4" path="res://assets/fonts/menu_font.tres" id="2_158n5"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qavbd"]
+atlas = ExtResource("1_6nml5")
+region = Rect2(128, 131, 64, 76)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qysdl"]
+atlas = ExtResource("1_6nml5")
+region = Rect2(6, 234, 52, 15)
+
+[node name="GameOverScreen" type="CanvasLayer" unique_id=1704591072]
+process_mode = 3
+script = ExtResource("1_158n5")
+
+[node name="Control" type="Control" parent="." unique_id=126482198]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="Control" unique_id=1681101410]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.47058824)
+
+[node name="TextureRect" type="TextureRect" parent="Control" unique_id=1978164542]
+layout_mode = 0
+offset_left = 233.0
+offset_top = 10.0
+offset_right = 297.0
+offset_bottom = 86.0
+scale = Vector2(9.159999, 9.159999)
+texture = SubResource("AtlasTexture_qavbd")
+
+[node name="GameOver" type="Label" parent="Control" unique_id=2142329212]
+layout_mode = 0
+offset_left = 385.0
+offset_top = 123.0
+offset_right = 655.0
+offset_bottom = 191.0
+theme_override_fonts/font = ExtResource("2_158n5")
+theme_override_font_sizes/font_size = 60
+text = "Game Over"
+
+[node name="WinLose" type="Label" parent="Control" unique_id=137983353]
+layout_mode = 0
+offset_left = 336.0
+offset_top = 209.0
+offset_right = 735.0
+offset_bottom = 277.0
+theme_override_fonts/font = ExtResource("2_158n5")
+theme_override_font_sizes/font_size = 45
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EnemiesKilled" type="Label" parent="Control" unique_id=1166852518]
+layout_mode = 0
+offset_left = 335.0
+offset_top = 332.0
+offset_right = 734.0
+offset_bottom = 400.0
+theme_override_fonts/font = ExtResource("2_158n5")
+theme_override_font_sizes/font_size = 40
+text = "Enemies killed: 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control" unique_id=1989408937]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 391.0
+offset_top = -291.0
+offset_right = -332.2832
+offset_bottom = -87.0
+grow_horizontal = 2
+grow_vertical = 0
+scale = Vector2(0.85028934, 0.9195493)
+
+[node name="RestartButton" type="Button" parent="Control/VBoxContainer" unique_id=192620756]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/icon_hover_color = Color(0.7137255, 0.45490196, 0.8901961, 1)
+theme_override_fonts/font = ExtResource("2_158n5")
+theme_override_font_sizes/font_size = 40
+text = "Restart"
+icon = SubResource("AtlasTexture_qysdl")
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[node name="MenuButton" type="Button" parent="Control/VBoxContainer" unique_id=1155189899]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/icon_hover_color = Color(0.7137255, 0.45490196, 0.8901961, 1)
+theme_override_fonts/font = ExtResource("2_158n5")
+theme_override_font_sizes/font_size = 40
+text = "Menu
+"
+icon = SubResource("AtlasTexture_qysdl")
+flat = true
+icon_alignment = 1
+expand_icon = true
+
+[connection signal="pressed" from="Control/VBoxContainer/RestartButton" to="." method="_on_restart_button_pressed"]
+[connection signal="pressed" from="Control/VBoxContainer/MenuButton" to="." method="_on_menu_button_pressed"]

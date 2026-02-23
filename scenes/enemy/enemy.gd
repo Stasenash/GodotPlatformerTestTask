@@ -4,7 +4,7 @@ extends CharacterBody2D
 const BASE_SPEED: float = 100.0
 const CHASE_SPEED_MULT: float = 2.0
 const ATTACK_DISTANCE: float = 100.0
-const ATTACK_DAMAGE: int = 3
+const ATTACK_DAMAGE: int = 7
 const ATTACK_OFFSET: float = 30.0
 const ATTACK_COOLDOWN: float = 1.0
 const DAMAGE_NUMBER_SCENE := preload("res://scenes/ui/damage_number.tscn")

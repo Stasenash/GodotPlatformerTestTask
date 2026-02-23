@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://t5gh6htkdm8b"]
+
+[ext_resource type="Script" uid="uid://crrl1bk5j3bix" path="res://scripts/core/finish_zone.gd" id="1_tprt0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u7ggb"]
+size = Vector2(37, 16)
+
+[node name="FinishZone" type="Area2D" unique_id=186611966]
+collision_layer = 32
+collision_mask = 64
+script = ExtResource("1_tprt0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=506600540]
+position = Vector2(19, 8)
+shape = SubResource("RectangleShape2D_u7ggb")
