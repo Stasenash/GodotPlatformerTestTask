@@ -219,7 +219,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"Attack",
-"speed": 8.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -382,9 +382,9 @@ shape = SubResource("CapsuleShape2D_dovo2")
 position = Vector2(-2, -2)
 scale = Vector2(1.5156251, 1.5156251)
 sprite_frames = SubResource("SpriteFrames_ioxgp")
-animation = &"Defeat"
+animation = &"Attack"
 autoplay = "Idle"
-frame = 9
+frame = 6
 frame_progress = 1.0
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=170415188]

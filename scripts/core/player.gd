@@ -1,35 +1,92 @@
 extends CharacterBody2D
 
-const SPEED = 300.0
-const JUMP_VELOCITY = -600.0
+const SPEED: float = 300.0
+const JUMP_VELOCITY: float = -600.0
 
-@onready var animation = $AnimatedSprite2D
+enum State {
+	IDLE,
+	RUN,
+	JUMP,
+	FALL,
+	ATTACK
+}
+
+@onready var anim: AnimatedSprite2D = $AnimatedSprite2D
+
+var state: State = State.IDLE
+
+
+func _ready() -> void:
+	anim.animation_finished.connect(_on_animation_finished)
 
 
 func _physics_process(delta: float) -> void:
+	_apply_gravity(delta)
+	_handle_input()
+	_update_state()
+	_update_animation()
+	move_and_slide()
+
+
+func _apply_gravity(delta: float) -> void:
 	if not is_on_floor():
 		velocity += get_gravity() * delta
 
+
+func _handle_input() -> void:
+	if state == State.ATTACK:
+		return
+
+	if Input.is_action_just_pressed("attack"):
+		_change_state(State.ATTACK)
+		return
+
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
-		animation.play("Jump")
+
 
 	var direction := Input.get_axis("move_left", "move_right")
-	if direction:
-		velocity.x = direction * SPEED
-		if velocity.y == 0:
-			animation.play("Walk")
+	velocity.x = direction * SPEED
+
+	if direction != 0:
+		anim.flip_h = direction < 0
+
+
+func _update_state() -> void:
+	if state == State.ATTACK:
+		return
+
+	if not is_on_floor():
+		state = State.JUMP if velocity.y < 0 else State.FALL
+	elif velocity.x != 0:
+		state = State.RUN
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED)
-		if velocity.y == 0:
-			animation.play("Idle")
-		
-	if direction == -1:
-		animation.flip_h = true
-	elif direction == 1:
-		animation.flip_h = false
+		state = State.IDLE
 
-	if velocity.y > 0:
-		animation.play("Fall")
 
-	move_and_slide()
+func _change_state(new_state: State) -> void:
+	state = new_state
+
+
+func _update_animation() -> void:
+	match state:
+		State.IDLE:
+			_play_animation("Idle")
+		State.RUN:
+			_play_animation("Walk")
+		State.JUMP:
+			_play_animation("Jump")
+		State.FALL:
+			_play_animation("Fall")
+		State.ATTACK:
+			_play_animation("Attack")
+
+
+func _play_animation(name: String) -> void:
+	if anim.animation != name:
+		anim.play(name)
+
+
+func _on_animation_finished() -> void:
+	if state == State.ATTACK:
+		_change_state(State.IDLE)
