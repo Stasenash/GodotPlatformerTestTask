@@ -4,6 +4,8 @@
 [ext_resource type="Script" uid="uid://cv1dvqtui1er2" path="res://scripts/core/player.gd" id="1_dovo2"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dovo2"]
+radius = 9.0
+height = 28.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_28m0y"]
 atlas = ExtResource("1_8afob")
@@ -447,27 +449,40 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dovo2"]
+size = Vector2(13.75, 11)
+
 [node name="Player" type="CharacterBody2D" unique_id=332954554]
+collision_layer = 64
+collision_mask = 15
 script = ExtResource("1_dovo2")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=229612189]
+position = Vector2(0, 1)
 shape = SubResource("CapsuleShape2D_dovo2")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2072380943]
 position = Vector2(-2, -2)
 scale = Vector2(1.5156251, 1.5156251)
 sprite_frames = SubResource("SpriteFrames_ioxgp")
-animation = &"Spawn"
+animation = &"Walk"
 autoplay = "Idle"
-frame = 9
-frame_progress = 1.0
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=170415188]
 zoom = Vector2(1.1, 1.1)
 process_callback = 0
 limit_left = 0
 limit_top = 0
-limit_right = 2500
+limit_right = 4304
 limit_bottom = 700
 position_smoothing_enabled = true
 drag_horizontal_enabled = true
+
+[node name="AttackArea" type="Area2D" parent="." unique_id=1565058882]
+collision_layer = 8
+collision_mask = 4
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea" unique_id=1765808833]
+position = Vector2(12, 9)
+shape = SubResource("RectangleShape2D_dovo2")

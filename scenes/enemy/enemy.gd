@@ -1,48 +1,69 @@
 extends CharacterBody2D
 
-const SPEED: float = 100.0
+
+const BASE_SPEED: float = 100.0
 const CHASE_SPEED_MULT: float = 2.0
+const ATTACK_DISTANCE: float = 100.0
+const ATTACK_DAMAGE: int = 20
+const ATTACK_OFFSET: float = 20.0
+
+
+signal died
+
+@export var max_health: int = 50
+var health: int
+
 
 enum State {
 	PATROL,
 	CHASE,
+	ATTACK,
+	HIT,
 	DEAD
 }
 
+var state: State = State.PATROL
+var direction: int = 1
+
+
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
-@onready var player: CharacterBody2D = get_parent().get_node("Player")
+@onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var attack_area: Area2D = $AttackArea
 @onready var left_ray: RayCast2D = $LeftEdgeRay
 @onready var right_ray: RayCast2D = $RightEdgeRay
+@onready var player: CharacterBody2D = get_parent().get_node("Player")
 
 
-var state: State = State.PATROL
-var direction: int = 1   # 1 = вправо, -1 = влево
+func _ready() -> void:
+	health = max_health
+	attack_area.monitoring = false
+	attack_area.body_entered.connect(_on_attack_body_entered)
+	anim.animation_finished.connect(_on_animation_finished)
+
 
 func _physics_process(delta: float) -> void:
 	if state == State.DEAD:
 		return
 
 	_apply_gravity(delta)
-	_update_state()
+	_process_ai()
 	_update_movement()
+	move_and_slide()
 	_update_animation()
 
-	move_and_slide()
+
+func _process_ai() -> void:
+	if state == State.CHASE and _is_player_close():
+		_change_state(State.ATTACK)
+
+
+func _is_player_close() -> bool:
+	return abs(player.global_position.x - global_position.x) < ATTACK_DISTANCE
+
 
 func _apply_gravity(delta: float) -> void:
 	if not is_on_floor():
 		velocity += get_gravity() * delta
-
-
-
-func _update_state() -> void:
-	if state == State.DEAD:
-		return
-	# PATROL и CHASE переключаются через detector
-	pass
-
-func _change_state(new_state: State) -> void:
-	state = new_state
 
 
 func _update_movement() -> void:
@@ -51,38 +72,86 @@ func _update_movement() -> void:
 			_patrol()
 		State.CHASE:
 			_chase()
+		State.ATTACK, State.HIT:
+			velocity.x = 0.0
 		State.DEAD:
 			velocity = Vector2.ZERO
-	
+
 
 func _patrol() -> void:
-	velocity.x = direction * SPEED
+	velocity.x = direction * BASE_SPEED
 
-	# Проверка края платформы
 	if direction == 1 and not right_ray.is_colliding():
 		_flip()
 	elif direction == -1 and not left_ray.is_colliding():
 		_flip()
 
-	anim.flip_h = direction < 0
+	_update_orientation(direction)
 
 
 func _chase() -> void:
-	var to_player := player.global_position - global_position
-	var dir_x: int = 0
-
-	if to_player.x > 0:
-		dir_x = 1
-	elif to_player.x < 0:
-		dir_x = -1
-
-	velocity.x = dir_x * SPEED * CHASE_SPEED_MULT
+	var dir_x: int = signi(player.global_position.x - global_position.x)
+	velocity.x = dir_x * BASE_SPEED * CHASE_SPEED_MULT
 
 	if dir_x != 0:
-		anim.flip_h = dir_x < 0
+		_update_orientation(dir_x)
+
 
 func _flip() -> void:
 	direction *= -1
+
+
+func _update_orientation(dir: int) -> void:
+	anim.flip_h = dir < 0
+	attack_area.position.x = -ATTACK_OFFSET if anim.flip_h else 0.0
+
+
+
+func _change_state(new_state: State) -> void:
+	if state == new_state:
+		return
+
+	state = new_state
+
+	match state:
+		State.ATTACK:
+			_enter_attack()
+		State.HIT:
+			_enter_hit()
+		State.DEAD:
+			_enter_dead()
+
+
+func _enter_attack() -> void:
+	velocity.x = 0.0
+	animation_player.play("Attack")
+
+
+func _enter_hit() -> void:
+	velocity.x = 0.0
+	_play_animation("Damage")
+
+
+func _enter_dead() -> void:
+	_play_animation("Defeat")
+	emit_signal("died")
+	await anim.animation_finished
+	queue_free()
+
+
+func _enable_attack() -> void:
+	attack_area.monitoring = true
+
+
+func _disable_attack() -> void:
+	attack_area.monitoring = false
+
+
+func _on_attack_body_entered(body: Node2D) -> void:
+	if body.has_method("take_damage"):
+		body.take_damage(ATTACK_DAMAGE)
+
+
 
 func _update_animation() -> void:
 	match state:
@@ -90,8 +159,8 @@ func _update_animation() -> void:
 			_play_animation("Walk")
 		State.CHASE:
 			_play_animation("WalkFaster")
-		State.DEAD:
-			_play_animation("Death")
+		State.ATTACK, State.HIT, State.DEAD:
+			pass
 
 
 func _play_animation(name: String) -> void:
@@ -99,17 +168,34 @@ func _play_animation(name: String) -> void:
 		anim.play(name)
 
 
+func _on_animation_finished() -> void:
+	match state:
+		State.ATTACK:
+			_disable_attack()
+			_change_state(State.CHASE)
+		State.HIT:
+			_change_state(State.CHASE)
+
+
+
+func take_damage(amount: int) -> void:
+	if state in [State.DEAD, State.HIT]:
+		return
+
+	health = clamp(health - amount, 0, max_health)
+
+	if health == 0:
+		_change_state(State.DEAD)
+	else:
+		_change_state(State.HIT)
+
+
 
 func _on_detector_body_entered(body: Node2D) -> void:
-	if body == player:
+	if body == player and state != State.DEAD:
 		_change_state(State.CHASE)
 
 
 func _on_detector_body_exited(body: Node2D) -> void:
-	if body == player:
+	if body == player and state != State.DEAD:
 		_change_state(State.PATROL)
-
-
-func die() -> void:
-	_change_state(State.DEAD)
-	velocity = Vector2.ZERO
