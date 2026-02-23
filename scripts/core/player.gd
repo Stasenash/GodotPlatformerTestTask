@@ -5,6 +5,7 @@ const MOVE_SPEED: float = 300.0
 const JUMP_FORCE: float = -550.0
 const ATTACK_DAMAGE: int = 2
 const ATTACK_OFFSET: float = 35.0
+const ATTACK_COOLDOWN: float = 0.8
 const DAMAGE_NUMBER_SCENE := preload("res://scenes/ui/damage_number.tscn")
 
 signal health_changed(current: int, max: int)
@@ -13,7 +14,6 @@ signal died
 
 @export var max_health: int = 20
 var health: int
-
 
 enum State {
 	SPAWN,
@@ -26,12 +26,13 @@ enum State {
 	DEAD
 }
 
-var state: State = State.SPAWN
-
 
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
 @onready var attack_area: Area2D = $AttackArea
 
+
+var attack_timer: float = 0.0
+var state: State = State.SPAWN
 
 func _ready() -> void:
 	health = max_health
@@ -48,7 +49,9 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if state == State.DEAD:
 		return
-
+	if attack_timer > 0.0:
+		attack_timer -= delta
+		
 	_apply_gravity(delta)
 	_handle_input()
 	_update_state()
@@ -65,7 +68,7 @@ func _handle_input() -> void:
 	if state in [State.ATTACK, State.SPAWN, State.HIT]:
 		return
 
-	if Input.is_action_just_pressed("attack"):
+	if Input.is_action_just_pressed("attack") and attack_timer <= 0.0:
 		_change_state(State.ATTACK)
 		return
 
@@ -167,6 +170,7 @@ func _play_animation(name: String) -> void:
 func _on_animation_finished() -> void:
 	match state:
 		State.ATTACK:
+			attack_timer = ATTACK_COOLDOWN
 			_change_state(State.IDLE)
 		State.SPAWN:
 			_change_state(State.IDLE)

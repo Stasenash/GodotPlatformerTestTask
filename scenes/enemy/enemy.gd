@@ -6,6 +6,7 @@ const CHASE_SPEED_MULT: float = 2.0
 const ATTACK_DISTANCE: float = 100.0
 const ATTACK_DAMAGE: int = 3
 const ATTACK_OFFSET: float = 30.0
+const ATTACK_COOLDOWN: float = 1.0
 const DAMAGE_NUMBER_SCENE := preload("res://scenes/ui/damage_number.tscn")
 
 signal died
@@ -25,6 +26,7 @@ enum State {
 var state: State = State.PATROL
 var direction: int = 1
 var player_in_range: bool = false
+var attack_timer: float = 0.0
 
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
@@ -44,7 +46,8 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if state == State.DEAD:
 		return
-
+	if attack_timer > 0.0:
+		attack_timer -= delta
 	_apply_gravity(delta)
 	_process_ai()
 	_update_movement()
@@ -56,7 +59,7 @@ func _process_ai() -> void:
 	if state in [State.ATTACK, State.HIT, State.DEAD]:
 		return
 	if player_in_range:
-		if _is_player_close():
+		if _is_player_close() and attack_timer <= 0.0:
 			_change_state(State.ATTACK)
 		elif state != State.HIT:
 			_change_state(State.CHASE)
@@ -99,7 +102,7 @@ func _patrol() -> void:
 func _chase() -> void:
 	var delta_x: float = player.global_position.x - global_position.x
 	var dir_x: int = signi(delta_x)
-
+	
 	velocity.x = dir_x * BASE_SPEED * CHASE_SPEED_MULT
 
 	if dir_x != 0:
@@ -180,6 +183,7 @@ func _on_anim_player_finished(anim_name: StringName) -> void:
 	match anim_name:
 		"Attack":
 			_disable_attack()
+			attack_timer = ATTACK_COOLDOWN
 			if player_in_range:
 				_change_state(State.CHASE)
 			else:
