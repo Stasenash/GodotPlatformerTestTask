@@ -145,7 +145,6 @@ func _enter_dead() -> void:
 	velocity = Vector2.ZERO
 	set_physics_process(false)
 	_play_animation("Defeat")
-	died.emit()
 
 
 # ================= Attack =================
@@ -191,7 +190,8 @@ func _on_animation_finished() -> void:
 			_change_state(State.IDLE)
 		State.HIT:
 			_change_state(State.IDLE)
-
+		State.DEAD:
+			died.emit()
 
 # ================= Orientation =================
 
