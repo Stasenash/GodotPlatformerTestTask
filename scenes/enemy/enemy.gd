@@ -46,35 +46,41 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if state == State.DEAD:
 		return
-	if attack_timer > 0.0:
-		attack_timer -= delta
+
+	_update_attack_cooldown(delta)
 	_apply_gravity(delta)
 	_process_ai()
 	_update_movement()
+
 	move_and_slide()
 	_update_animation()
 
 
+# ================= AI =================
+
 func _process_ai() -> void:
 	if state in [State.ATTACK, State.HIT, State.DEAD]:
 		return
-	if player_in_range:
-		if _is_player_close() and attack_timer <= 0.0:
-			_change_state(State.ATTACK)
-		elif state != State.HIT:
-			_change_state(State.CHASE)
-	else:
+
+	if not player_in_range:
 		_change_state(State.PATROL)
+		return
+
+	if _can_attack():
+		_change_state(State.ATTACK)
+	else:
+		_change_state(State.CHASE)
+
+
+func _can_attack() -> bool:
+	return attack_timer <= 0.0 and _is_player_close()
 
 
 func _is_player_close() -> bool:
 	return abs(player.global_position.x - global_position.x) < ATTACK_DISTANCE
 
 
-func _apply_gravity(delta: float) -> void:
-	if not is_on_floor():
-		velocity += get_gravity() * delta
-
+# ================= Movement =================
 
 func _update_movement() -> void:
 	match state:
@@ -102,11 +108,16 @@ func _patrol() -> void:
 func _chase() -> void:
 	var delta_x: float = player.global_position.x - global_position.x
 	var dir_x: int = signi(delta_x)
-	
+
 	velocity.x = dir_x * BASE_SPEED * CHASE_SPEED_MULT
 
 	if dir_x != 0:
 		_update_orientation(dir_x)
+
+
+func _apply_gravity(delta: float) -> void:
+	if not is_on_floor():
+		velocity += get_gravity() * delta
 
 
 func _flip() -> void:
@@ -118,6 +129,7 @@ func _update_orientation(dir: int) -> void:
 	attack_area.position.x = -ATTACK_OFFSET if anim.flip_h else 0.0
 
 
+# ================= FSM =================
 
 func _change_state(new_state: State) -> void:
 	if state == new_state:
@@ -150,6 +162,15 @@ func _enter_dead() -> void:
 	animation_player.play("Defeat")
 
 
+func _return_to_idle_logic() -> void:
+	if player_in_range:
+		_change_state(State.CHASE)
+	else:
+		_change_state(State.PATROL)
+
+
+# ================= Combat =================
+
 func _enable_attack() -> void:
 	attack_area.monitoring = true
 
@@ -162,6 +183,43 @@ func _on_attack_body_entered(body: Node2D) -> void:
 	if body.has_method("take_damage"):
 		body.take_damage(ATTACK_DAMAGE)
 
+
+func take_damage(amount: int) -> void:
+	if state in [State.DEAD, State.HIT]:
+		return
+
+	_spawn_damage_number(amount)
+
+	health = clamp(health - amount, 0, max_health)
+
+	if health == 0:
+		_change_state(State.DEAD)
+	else:
+		_change_state(State.HIT)
+
+
+func _spawn_damage_number(amount: int) -> void:
+	var dmg = DAMAGE_NUMBER_SCENE.instantiate()
+	get_parent().add_child(dmg)
+
+	dmg.global_position = global_position + Vector2(0, -40)
+	dmg.setup(amount)
+
+
+# ================= Animation =================
+
+func _on_anim_player_finished(anim_name: StringName) -> void:
+	match anim_name:
+		"Attack":
+			_disable_attack()
+			attack_timer = ATTACK_COOLDOWN
+			_return_to_idle_logic()
+
+		"Hit":
+			_return_to_idle_logic()
+
+		"Defeat":
+			queue_free()
 
 
 func _update_animation() -> void:
@@ -179,48 +237,12 @@ func _play_animation(name: String) -> void:
 		anim.play(name)
 
 
-func _on_anim_player_finished(anim_name: StringName) -> void:
-	match anim_name:
-		"Attack":
-			_disable_attack()
-			attack_timer = ATTACK_COOLDOWN
-			if player_in_range:
-				_change_state(State.CHASE)
-			else:
-				_change_state(State.PATROL)
+# ================= Utility =================
 
-		"Hit":
-			if player_in_range:
-				_change_state(State.CHASE)
-			else:
-				_change_state(State.PATROL)
-		
-		"Defeat":
-			queue_free()
+func _update_attack_cooldown(delta: float) -> void:
+	if attack_timer > 0.0:
+		attack_timer -= delta
 
-
-func _is_player_visible() -> bool:
-	return player_in_range
-
-func take_damage(amount: int) -> void:
-	if state in [State.DEAD, State.HIT]:
-		return
-
-	_spawn_damage_number(amount)
-
-	health = clamp(health - amount, 0, max_health)
-
-	if health == 0:
-		_change_state(State.DEAD)
-	else:
-		_change_state(State.HIT)
-
-func _spawn_damage_number(amount: int) -> void:
-	var dmg = DAMAGE_NUMBER_SCENE.instantiate()
-	get_parent().add_child(dmg)
-
-	dmg.global_position = global_position + Vector2(0, -40)
-	dmg.setup(amount)
 
 func _on_detector_body_entered(body: Node2D) -> void:
 	if body == player:

@@ -1,24 +1,32 @@
 extends CanvasLayer
 
-@onready var hp_bar: ProgressBar = $MarginContainer/HBoxContainer/HPContainer/HPBar
-@onready var kills_counter: Label = $MarginContainer/HBoxContainer/KillsCounter
-@onready var hp_text: Label = $MarginContainer/HBoxContainer/HPContainer/HPBar/HPText
+const KILLS_TEXT_FORMAT: String = "Enemies killed: %d"
+const HP_TEXT_FORMAT: String = "%d / %d"
 
+@onready var _hp_bar: ProgressBar = $MarginContainer/HBoxContainer/HPContainer/HPBar
+@onready var _kills_label: Label = $MarginContainer/HBoxContainer/KillsCounter
+@onready var _hp_text: Label = $MarginContainer/HBoxContainer/HPContainer/HPBar/HPText
 
-var max_health: int = 100
+var _max_health: int = 100
 
 
 func set_max_health(value: int) -> void:
-	max_health = value
-	hp_bar.max_value = value
-	_update_hp_text(hp_bar.value)
+	_max_health = max(value, 1)
+	_hp_bar.max_value = _max_health
+	_update_health_visual(_hp_bar.value)
+
 
 func update_health(current: int) -> void:
-	hp_bar.value = current
-	_update_hp_text(hp_bar.value)
+	var clamped_value: int = clamp(current, 0, _max_health)
+	_update_health_visual(clamped_value)
+
 
 func update_kills(count: int) -> void:
-	kills_counter.text = "Enemies killed: %d" % count
+	_kills_label.text = KILLS_TEXT_FORMAT % count
 
-func _update_hp_text(current: int) -> void:
-	hp_text.text = "%d / %d" % [current, max_health]
+
+# ================= Internal =================
+
+func _update_health_visual(current: int) -> void:
+	_hp_bar.value = current
+	_hp_text.text = HP_TEXT_FORMAT % [current, _max_health]
