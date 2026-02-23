@@ -477,6 +477,37 @@ tracks/1/keys = {
 "values": [&"Attack"]
 }
 
+[sub_resource type="Animation" id="Animation_gl05p"]
+resource_name = "Defeat"
+length = 1.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"Defeat"]
+}
+
+[sub_resource type="Animation" id="Animation_tjssy"]
+resource_name = "Hit"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"Damage"]
+}
+
 [sub_resource type="Animation" id="Animation_40wdo"]
 length = 0.001
 tracks/0/type = "value"
@@ -495,6 +526,8 @@ tracks/0/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_40wdo"]
 _data = {
 &"Attack": SubResource("Animation_a3pup"),
+&"Defeat": SubResource("Animation_gl05p"),
+&"Hit": SubResource("Animation_tjssy"),
 &"RESET": SubResource("Animation_40wdo")
 }
 
@@ -524,7 +557,7 @@ autoplay = "Idle"
 libraries/ = SubResource("AnimationLibrary_40wdo")
 
 [node name="Detector" type="Area2D" parent="." unique_id=1921812657]
-scale = Vector2(0.6819337, 3.241934)
+scale = Vector2(0.9219348, 1.9219369)
 collision_layer = 4
 collision_mask = 65
 

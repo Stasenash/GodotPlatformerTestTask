@@ -38,7 +38,7 @@ func _ready() -> void:
 	health = max_health
 	attack_area.monitoring = false
 	attack_area.body_entered.connect(_on_attack_body_entered)
-	anim.animation_finished.connect(_on_animation_finished)
+	animation_player.animation_finished.connect(_on_anim_player_finished)
 
 
 func _physics_process(delta: float) -> void:
@@ -53,6 +53,8 @@ func _physics_process(delta: float) -> void:
 
 
 func _process_ai() -> void:
+	if state in [State.ATTACK, State.HIT, State.DEAD]:
+		return
 	if player_in_range:
 		if _is_player_close():
 			_change_state(State.ATTACK)
@@ -96,12 +98,11 @@ func _patrol() -> void:
 
 func _chase() -> void:
 	var delta_x: float = player.global_position.x - global_position.x
-	
-	if abs(delta_x) < 5.0:
-		velocity.x = 0.0
-	else:
-		var dir_x: int = signi(delta_x)
-		velocity.x = dir_x * BASE_SPEED * CHASE_SPEED_MULT
+	var dir_x: int = signi(delta_x)
+
+	velocity.x = dir_x * BASE_SPEED * CHASE_SPEED_MULT
+
+	if dir_x != 0:
 		_update_orientation(dir_x)
 
 
@@ -137,14 +138,13 @@ func _enter_attack() -> void:
 
 func _enter_hit() -> void:
 	velocity.x = 0.0
-	_play_animation("Damage")
+	animation_player.play("Hit")
 
 
 func _enter_dead() -> void:
-	_play_animation("Defeat")
 	emit_signal("died")
-	await anim.animation_finished
-	queue_free()
+	velocity = Vector2.ZERO
+	animation_player.play("Defeat")
 
 
 func _enable_attack() -> void:
@@ -176,25 +176,24 @@ func _play_animation(name: String) -> void:
 		anim.play(name)
 
 
-func _on_animation_finished() -> void:
-	match state:
-		State.ATTACK:
+func _on_anim_player_finished(anim_name: StringName) -> void:
+	match anim_name:
+		"Attack":
 			_disable_attack()
-			_recalculate_state()
+			if player_in_range:
+				_change_state(State.CHASE)
+			else:
+				_change_state(State.PATROL)
 
-		State.HIT:
-			_recalculate_state()
+		"Hit":
+			if player_in_range:
+				_change_state(State.CHASE)
+			else:
+				_change_state(State.PATROL)
+		
+		"Defeat":
+			queue_free()
 
-
-func _recalculate_state() -> void:
-	if not player_in_range:
-		state = State.PATROL
-	elif _is_player_close():
-		state = State.ATTACK
-	else:
-		state = State.CHASE
-
-	_update_movement()
 
 func _is_player_visible() -> bool:
 	return player_in_range
@@ -215,12 +214,12 @@ func take_damage(amount: int) -> void:
 func _on_detector_body_entered(body: Node2D) -> void:
 	if body == player:
 		player_in_range = true
-		if state != State.DEAD:
+		if state not in [State.DEAD, State.ATTACK, State.HIT]:
 			_change_state(State.CHASE)
 
 
 func _on_detector_body_exited(body: Node2D) -> void:
 	if body == player:
 		player_in_range = false
-		if state != State.DEAD:
+		if state not in [State.DEAD, State.ATTACK, State.HIT]:
 			_change_state(State.PATROL)

@@ -465,7 +465,7 @@ shape = SubResource("CapsuleShape2D_dovo2")
 position = Vector2(-2, -2)
 scale = Vector2(1.5156251, 1.5156251)
 sprite_frames = SubResource("SpriteFrames_ioxgp")
-animation = &"Walk"
+animation = &"Damage"
 autoplay = "Idle"
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=170415188]
