@@ -9,16 +9,18 @@ enum State {
 	RUN,
 	JUMP,
 	FALL,
-	ATTACK
+	ATTACK,
+	SPAWN
 }
 
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
 
-var state: State = State.IDLE
+var state: State = State.SPAWN
 
 
 func _ready() -> void:
 	anim.animation_finished.connect(_on_animation_finished)
+	_play_animation("Spawn")
 
 
 func _physics_process(delta: float) -> void:
@@ -35,7 +37,7 @@ func _apply_gravity(delta: float) -> void:
 
 
 func _handle_input() -> void:
-	if state == State.ATTACK:
+	if state == State.ATTACK or state == State.SPAWN:
 		return
 
 	if Input.is_action_just_pressed("attack"):
@@ -53,8 +55,14 @@ func _handle_input() -> void:
 		anim.flip_h = direction < 0
 
 
+func respawn(gp: Vector2) -> void:
+	global_position = gp
+	velocity = Vector2.ZERO
+	_change_state(State.SPAWN)
+	_play_animation("Spawn")
+
 func _update_state() -> void:
-	if state == State.ATTACK:
+	if state == State.ATTACK or state == State.SPAWN:
 		return
 
 	if not is_on_floor():
@@ -89,5 +97,5 @@ func _play_animation(name: String) -> void:
 
 
 func _on_animation_finished() -> void:
-	if state == State.ATTACK:
+	if state == State.ATTACK or state == State.SPAWN:
 		_change_state(State.IDLE)

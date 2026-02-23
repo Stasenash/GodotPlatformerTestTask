@@ -5,8 +5,5 @@ extends Node2D
 
 func _on_death_zone_body_entered(body: Node2D) -> void:
 		if body == player:
-			_respawn_player()
-		
-func _respawn_player() -> void:
-	player.global_position = respawn_point.global_position
-	player.velocity = Vector2.ZERO
+			player.respawn(respawn_point.global_position)
+	

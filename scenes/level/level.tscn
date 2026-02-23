@@ -180,7 +180,7 @@ script = ExtResource("1_hnne4")
 [node name="Background" parent="." unique_id=1320881841 instance=ExtResource("1_h3e3j")]
 
 [node name="Player" parent="." unique_id=332954554 instance=ExtResource("2_nbgty")]
-position = Vector2(108, 543)
+position = Vector2(107, 602)
 scale = Vector2(2.4798176, 2.4798176)
 
 [node name="Enemy" parent="." unique_id=1885585199 instance=ExtResource("3_qkmgm")]
