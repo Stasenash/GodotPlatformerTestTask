@@ -535,7 +535,7 @@ _data = {
 radius = 86.00581
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a3pup"]
-size = Vector2(10, 11)
+size = Vector2(14.902424, 11)
 
 [node name="Enemy" type="CharacterBody2D" unique_id=1885585199 groups=["enemies"]]
 collision_layer = 4
@@ -572,11 +572,12 @@ target_position = Vector2(-15, 17)
 target_position = Vector2(15, 17)
 
 [node name="AttackArea" type="Area2D" parent="." unique_id=2121469388]
+scale = Vector2(1.6400013, 1)
 collision_layer = 8
 collision_mask = 64
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea" unique_id=1704333762]
-position = Vector2(9, 4.5)
+position = Vector2(11.451214, 4.5)
 shape = SubResource("RectangleShape2D_a3pup")
 
 [connection signal="body_entered" from="Detector" to="." method="_on_detector_body_entered"]

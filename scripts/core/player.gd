@@ -3,15 +3,15 @@ extends CharacterBody2D
 
 const MOVE_SPEED: float = 300.0
 const JUMP_FORCE: float = -550.0
-const ATTACK_DAMAGE: int = 10
-const ATTACK_OFFSET: float = 30.0
+const ATTACK_DAMAGE: int = 2
+const ATTACK_OFFSET: float = 35.0
 
 
 signal health_changed(current: int, max: int)
 signal died
 
 
-@export var max_health: int = 100
+@export var max_health: int = 20
 var health: int
 
 

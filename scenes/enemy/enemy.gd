@@ -4,13 +4,13 @@ extends CharacterBody2D
 const BASE_SPEED: float = 100.0
 const CHASE_SPEED_MULT: float = 2.0
 const ATTACK_DISTANCE: float = 100.0
-const ATTACK_DAMAGE: int = 20
-const ATTACK_OFFSET: float = 20.0
+const ATTACK_DAMAGE: int = 3
+const ATTACK_OFFSET: float = 30.0
 
 
 signal died
 
-@export var max_health: int = 50
+@export var max_health: int = 10
 var health: int
 
 

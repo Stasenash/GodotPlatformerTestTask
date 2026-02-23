@@ -484,5 +484,6 @@ collision_mask = 4
 monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackArea" unique_id=1765808833]
-position = Vector2(12, 9)
+position = Vector2(13, 9)
+scale = Vector2(1.3600018, 1)
 shape = SubResource("RectangleShape2D_dovo2")

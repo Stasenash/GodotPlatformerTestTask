@@ -4,6 +4,12 @@
 [ext_resource type="Texture2D" uid="uid://b7g5vcawcw2mu" path="res://assets/sprites/player/SPRITE_PORTRAIT.png" id="1_qao66"]
 [ext_resource type="FontFile" uid="uid://b7txi7bp2hua4" path="res://assets/fonts/menu_font.tres" id="2_as3gr"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_as3gr"]
+bg_color = Color(0.36, 0.36, 0.36, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ax4tw"]
+bg_color = Color(0.6, 0, 0, 1)
+
 [sub_resource type="LabelSettings" id="LabelSettings_ax4tw"]
 font = ExtResource("2_as3gr")
 font_size = 40
@@ -35,11 +41,13 @@ stretch_mode = 4
 [node name="HPBar" type="ProgressBar" parent="MarginContainer/HBoxContainer" unique_id=642295341]
 custom_minimum_size = Vector2(300, 30)
 layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_as3gr")
+theme_override_styles/fill = SubResource("StyleBoxFlat_ax4tw")
 value = 100.0
-fill_mode = 1
+show_percentage = false
 
 [node name="KillsCounter" type="Label" parent="MarginContainer/HBoxContainer" unique_id=1668527152]
-custom_minimum_size = Vector2(500, 100)
+custom_minimum_size = Vector2(600, 100)
 layout_mode = 2
 text = "Enemies Killed: 0"
 label_settings = SubResource("LabelSettings_ax4tw")
