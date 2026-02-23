@@ -1,9 +1,10 @@
 [gd_scene format=4 uid="uid://dwv76u1mtd5jd"]
 
 [ext_resource type="PackedScene" uid="uid://bp84fp1tvljcq" path="res://scenes/ui/background.tscn" id="1_h3e3j"]
+[ext_resource type="Script" uid="uid://mdo6ll0hp8lg" path="res://scripts/core/level.gd" id="1_hnne4"]
 [ext_resource type="PackedScene" uid="uid://bdaonqslu2qyn" path="res://scenes/player/player.tscn" id="2_nbgty"]
 [ext_resource type="Texture2D" uid="uid://bagheu3hrdjyp" path="res://assets/sprites/tiles/Dungeon Tile Set.png" id="3_i166f"]
-[ext_resource type="PackedScene" uid="uid://sxxakermkqxl" path="res://scenes/enemy/enemy_night_born.tscn" id="3_qkmgm"]
+[ext_resource type="PackedScene" uid="uid://sxxakermkqxl" path="res://scenes/enemy/enemy.tscn" id="3_qkmgm"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qkmgm"]
 texture = ExtResource("3_i166f")
@@ -171,7 +172,10 @@ texture = ExtResource("3_i166f")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_qkmgm")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qkmgm"]
+
 [node name="Level" type="Node2D" unique_id=1946725693]
+script = ExtResource("1_hnne4")
 
 [node name="Background" parent="." unique_id=1320881841 instance=ExtResource("1_h3e3j")]
 
@@ -179,7 +183,7 @@ sources/0 = SubResource("TileSetAtlasSource_qkmgm")
 position = Vector2(108, 543)
 scale = Vector2(2.4798176, 2.4798176)
 
-[node name="EnemyNightBorn" parent="." unique_id=1885585199 instance=ExtResource("3_qkmgm")]
+[node name="Enemy" parent="." unique_id=1885585199 instance=ExtResource("3_qkmgm")]
 position = Vector2(1081, 528)
 scale = Vector2(5.68, 5.68)
 
@@ -194,3 +198,15 @@ tile_set = SubResource("TileSet_hnne4")
 [node name="Wall" type="TileMapLayer" parent="TileMap" unique_id=198223133]
 tile_map_data = PackedByteArray("AAD+/xgAAAADAAYAAAD+/xkAAAADAAYAAAD+/xoAAAADAAYAAAD+/xsAAAADAAYAAAD+/xwAAAADAAYAAAD+/x0AAAADAAYAAAD+/x4AAAADAAYAAAD+/x8AAAADAAYAAAD+/yAAAAADAAYAAAD+/yEAAAADAAYAAAD+/yIAAAADAAYAAAD+/yMAAAADAAYAAAD+/yQAAAADAAYAAAD+/yUAAAADAAYAAAD+/yYAAAADAAYAAAD+/ycAAAADAAYAAAD//xgAAAADAAYAAAD//xkAAAADAAYAAAD//xoAAAADAAYAAAD//xsAAAADAAYAAAD//xwAAAADAAYAAAD//x0AAAADAAYAAAD//x4AAAADAAYAAAD//x8AAAADAAYAAAD//yAAAAADAAYAAAD//yEAAAADAAYAAAD//yIAAAADAAYAAAD//yMAAAADAAYAAAD//yQAAAADAAYAAAD//yUAAAADAAYAAAD//yYAAAADAAYAAAD//ycAAAADAAYAAAD+/w4AAAADAAYAAAD+/w8AAAADAAYAAAD+/xAAAAADAAYAAAD+/xEAAAADAAYAAAD+/xIAAAADAAYAAAD+/xMAAAADAAYAAAD+/xQAAAADAAYAAAD+/xUAAAADAAYAAAD+/xYAAAADAAYAAAD+/xcAAAADAAYAAAD//w4AAAADAAYAAAD//w8AAAADAAYAAAD//xAAAAADAAYAAAD//xEAAAADAAYAAAD//xIAAAADAAYAAAD//xMAAAADAAYAAAD//xQAAAADAAYAAAD//xUAAAADAAYAAAD//xYAAAADAAYAAAD//xcAAAADAAYAAAA=")
 tile_set = SubResource("TileSet_hnne4")
+
+[node name="DeathZone" type="Area2D" parent="." unique_id=1472663309]
+position = Vector2(1363, 739)
+scale = Vector2(147.51999, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathZone" unique_id=1754912543]
+shape = SubResource("RectangleShape2D_qkmgm")
+
+[node name="RespawnPoint" type="Marker2D" parent="." unique_id=109237475]
+position = Vector2(125, 585)
+
+[connection signal="body_entered" from="DeathZone" to="." method="_on_death_zone_body_entered"]

@@ -1,7 +1,5 @@
 extends Control
 
-class_name MeinMenu
-
 @onready var play_button: Button = $ButtonsContainer/PlayButton
 @onready var exit_button: Button = $ButtonsContainer/ExitButton
 

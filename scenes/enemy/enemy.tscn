@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://sxxakermkqxl"]
 
 [ext_resource type="Texture2D" uid="uid://byt7igxkdsf4e" path="res://assets/sprites/enemies/NightBorne.png" id="1_fkc1c"]
-[ext_resource type="Script" uid="uid://djkrbgejyfq38" path="res://scenes/enemy/enemy_night_born.gd" id="1_wrngk"]
+[ext_resource type="Script" uid="uid://djkrbgejyfq38" path="res://scenes/enemy/enemy.gd" id="1_wrngk"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_883im"]
 
@@ -459,7 +459,7 @@ scale = Vector2(0.78125006, 0.8937501)
 sprite_frames = SubResource("SpriteFrames_4ug1o")
 animation = &"WalkFaster"
 autoplay = "Idle"
-frame_progress = 0.12681462
+frame_progress = 0.044895392
 
 [node name="Detector" type="Area2D" parent="." unique_id=1921812657]
 
