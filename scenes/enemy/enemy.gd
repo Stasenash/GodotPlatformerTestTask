@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 const SPEED: float = 100.0
+const CHASE_SPEED_MULT: float = 2.0
 
 enum State {
 	PATROL,
@@ -75,7 +76,7 @@ func _chase() -> void:
 	elif to_player.x < 0:
 		dir_x = -1
 
-	velocity.x = dir_x * SPEED
+	velocity.x = dir_x * SPEED * CHASE_SPEED_MULT
 
 	if dir_x != 0:
 		anim.flip_h = dir_x < 0
