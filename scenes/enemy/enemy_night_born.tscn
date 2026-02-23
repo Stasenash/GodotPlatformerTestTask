@@ -213,6 +213,30 @@ region = Rect2(320, 80, 80, 80)
 atlas = ExtResource("1_fkc1c")
 region = Rect2(400, 80, 80, 80)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_ofbib"]
+atlas = ExtResource("1_fkc1c")
+region = Rect2(0, 80, 80, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j7kfk"]
+atlas = ExtResource("1_fkc1c")
+region = Rect2(80, 80, 80, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nm1k0"]
+atlas = ExtResource("1_fkc1c")
+region = Rect2(160, 80, 80, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d4kwb"]
+atlas = ExtResource("1_fkc1c")
+region = Rect2(240, 80, 80, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6pxss"]
+atlas = ExtResource("1_fkc1c")
+region = Rect2(320, 80, 80, 80)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5lncl"]
+atlas = ExtResource("1_fkc1c")
+region = Rect2(400, 80, 80, 80)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_4ug1o"]
 animations = [{
 "frames": [{
@@ -395,6 +419,29 @@ animations = [{
 "loop": true,
 "name": &"Walk",
 "speed": 7.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ofbib")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j7kfk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nm1k0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d4kwb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6pxss")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5lncl")
+}],
+"loop": true,
+"name": &"WalkFaster",
+"speed": 10.0
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_l8adx"]
@@ -410,15 +457,21 @@ shape = SubResource("CapsuleShape2D_883im")
 position = Vector2(-1.0000001, -7)
 scale = Vector2(0.78125006, 0.8937501)
 sprite_frames = SubResource("SpriteFrames_4ug1o")
-animation = &"Damage"
+animation = &"WalkFaster"
 autoplay = "Idle"
-frame = 4
-frame_progress = 0.5807462
+frame_progress = 0.12681462
 
 [node name="Detector" type="Area2D" parent="." unique_id=1921812657]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Detector" unique_id=757148096]
+scale = Vector2(1.0800003, 0.079998866)
 shape = SubResource("CircleShape2D_l8adx")
+
+[node name="LeftEdgeRay" type="RayCast2D" parent="." unique_id=827586875]
+target_position = Vector2(-16, 20)
+
+[node name="RightEdgeRay" type="RayCast2D" parent="." unique_id=83128559]
+target_position = Vector2(16, 20)
 
 [connection signal="body_entered" from="Detector" to="." method="_on_detector_body_entered"]
 [connection signal="body_exited" from="Detector" to="." method="_on_detector_body_exited"]
