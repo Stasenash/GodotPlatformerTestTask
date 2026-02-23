@@ -1,2 +1,2 @@
 # GodotPlatformerTestTask
-Test task for the Next Genium volunteering participation
+Test task for the Godot volunteering participation
